@@ -2,7 +2,7 @@
 
 ![Image description](https://raw.githubusercontent.com/PlayKids/match3-test/master/ComboGif.gif?token=ACIXP4ZNFQ7AM6LNNIJRYE262VS2G)
 
-**Match 3 game is based on the simple concept:**
+**Game concept:**
 
 There are gems of different colors on a grid. Players have to move these gems up down left right to form a row or column of same colored 3 or more gems. If done these gems of same kind gets destroyed and player get points for it. Everytime the player scores, the gems need to be moved down and freeing up place for new gems that will be automaticly generated on top.
 
