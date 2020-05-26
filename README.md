@@ -8,6 +8,6 @@ There are gems of different colors on a grid. Players have to move these gems up
 
 **Rules**
 
-The game must evaluate after every change in the board if there is possible moves and shuffle gems if needed.
-Every round must last 2 minutes and have an goal of points. The goal must increase after each round.
+After every change in the board the game must evaluate if there is possible moves and shuffle gems if needed.
+Every round must last 2 minutes and have a points goal that will bee increased after the conclusion of each round.
 Game must have sound and make use of the sprites and particles of this repository.
