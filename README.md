@@ -13,3 +13,4 @@ Everytime the player scores, the gems need to be moved down and freeing up place
 - Every round must last 2 minutes and have a points goal that will bee increased after the conclusion of each round.
 - Game must have sound and make use of the sprites and particles of this repository. 
 - Be aware that the board and UI must works in differenct resolutions and aspect ratio (Portrait).
+- Delivery: the project must be uploaded into a github repository
