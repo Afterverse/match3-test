@@ -1,6 +1,6 @@
 # match3-test
 
-![Image description](https://raw.githubusercontent.com/PlayKids/match3-test/master/ComboGif.gif?token=ACIXP4ZNFQ7AM6LNNIJRYE262VS2G)
+![Image description](https://raw.githubusercontent.com/PlayKids/match3-test/master/ComboGif.gif?token=ACIXP4Y4NCTOIHSWPRWIE3C65JSLU)
 
 **Game concept**
 
