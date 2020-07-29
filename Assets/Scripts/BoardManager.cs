@@ -11,16 +11,16 @@ public class BoardManager : MonoBehaviour
 
     public int mininumMatchSize = 3;
 
-    private GameObject[] _tiles;
-    private DoddleItem[,] _items;
+    private GameObject[] _tiles; // Our reference to prefabs
+    private Item[,] _items; // Board items
 
-    private DoddleItem _selectedItem;
+    private Item _selectedItem;
 
     //Sets up the outer walls and floor (background) of the game board.
     void BoardSetup()
     {
 
-        _items = new DoddleItem[width, height];
+        _items = new Item[width, height];
 
         //Loop along x axis.
         for (int x = 0; x < width; x++)
@@ -33,13 +33,13 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    DoddleItem InstantiateDoddle(int x, int y)
+    Item InstantiateDoddle(int x, int y)
     {
         //Choose a random tile from our array of tile prefabs and prepare to instantiate it.
         GameObject toInstantiate = _tiles[Random.Range(0, _tiles.Length)];
 
         //Instantiate the GameObject instance using the prefab chosen for toInstantiate at the Vector3 corresponding to current grid position in loop.
-        DoddleItem newDoddle = ((GameObject)Instantiate(toInstantiate, new Vector3(x, y, 0f), Quaternion.identity)).GetComponent<DoddleItem>();
+        Item newDoddle = ((GameObject)Instantiate(toInstantiate, new Vector3(x, y, 0f), Quaternion.identity)).GetComponent<Item>();
 
         //Set the parent of our newly instantiated object instance to boardHolder, this is just organizational to avoid cluttering hierarchy.
         newDoddle.transform.SetParent(this.transform);
@@ -50,7 +50,7 @@ public class BoardManager : MonoBehaviour
         return newDoddle;
     }
 
-    void OnMouseOverItem(DoddleItem item)
+    void OnMouseOverItem(Item item)
     {
         if (_selectedItem == item)
         {
@@ -79,7 +79,7 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    IEnumerator TryMatch(DoddleItem a, DoddleItem b)
+    IEnumerator TryMatch(Item a, Item b)
     {
         yield return StartCoroutine(Swap(a, b)); // We do the swappingz
 
@@ -102,7 +102,7 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    IEnumerator DestroyItems(List<DoddleItem> items)
+    IEnumerator DestroyItems(List<Item> items)
     {
         foreach (var item in items)
         {
@@ -111,7 +111,7 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    IEnumerator Swap(DoddleItem a, DoddleItem b)
+    IEnumerator Swap(Item a, Item b)
     {
         SetPhysicsStatus(false);
 
@@ -125,9 +125,9 @@ public class BoardManager : MonoBehaviour
         SetPhysicsStatus(true);
     }
 
-    void SwapIndices(DoddleItem a, DoddleItem b)
+    void SwapIndices(Item a, Item b)
     {
-        DoddleItem tempA = _items[a.x, a.y];
+        Item tempA = _items[a.x, a.y];
         _items[a.x, a.y] = b;
         _items[b.x, b.y] = tempA;
         int bOldX = b.x; int bOldY = b.y;
@@ -137,18 +137,18 @@ public class BoardManager : MonoBehaviour
 
     public void SetPhysicsStatus(bool status)
     {
-        foreach (DoddleItem item in _items)
+        foreach (Item item in _items)
         {
             Rigidbody2D rb = item.GetComponent<Rigidbody2D>();
             rb.isKinematic = !status;
         }
     }
 
-    Match GetMatchInfo(DoddleItem item)
+    Match GetMatchInfo(Item item)
     {
         Match m = new Match();
-        List<DoddleItem> horizontalMatch = GetMatchHorizontally(item);
-        List<DoddleItem> verticalMatch = GetMatchVertically(item);
+        List<Item> horizontalMatch = GetMatchHorizontally(item);
+        List<Item> verticalMatch = GetMatchVertically(item);
         if (horizontalMatch.Count >= mininumMatchSize && horizontalMatch.Count >= verticalMatch.Count)
         {
             Debug.Log("Got a horizontal match");
@@ -169,7 +169,7 @@ public class BoardManager : MonoBehaviour
         return m;
     }
 
-    int GetMinX(List<DoddleItem> items)
+    int GetMinX(List<Item> items)
     {
         float[] indices = new float[items.Count];
         for (int i = 0; i < indices.Length; i++)
@@ -179,7 +179,7 @@ public class BoardManager : MonoBehaviour
         return (int)Mathf.Min(indices);
     }
 
-    int GetMaxX(List<DoddleItem> items)
+    int GetMaxX(List<Item> items)
     {
         float[] indices = new float[items.Count];
         for (int i = 0; i < indices.Length; i++)
@@ -189,7 +189,7 @@ public class BoardManager : MonoBehaviour
         return (int)Mathf.Max(indices);
     }
 
-    int GetMinY(List<DoddleItem> items)
+    int GetMinY(List<Item> items)
     {
         float[] indices = new float[items.Count];
         for (int i = 0; i < indices.Length; i++)
@@ -199,7 +199,7 @@ public class BoardManager : MonoBehaviour
         return (int)Mathf.Min(indices);
     }
 
-    int GetMaxY(List<DoddleItem> items)
+    int GetMaxY(List<Item> items)
     {
         float[] indices = new float[items.Count];
         for (int i = 0; i < indices.Length; i++)
@@ -209,10 +209,10 @@ public class BoardManager : MonoBehaviour
         return (int)Mathf.Max(indices);
     }
 
-    List<DoddleItem> GetMatchHorizontally(DoddleItem item)
+    List<Item> GetMatchHorizontally(Item item)
     {
         Debug.Log("GetMatchHorizontally");
-        List<DoddleItem> matched = new List<DoddleItem> { item };
+        List<Item> matched = new List<Item> { item };
         int leftItem = item.x - 1; // Imediatelly left item
         int rightItem = item.x + 1; // Imediatelly right item
         Debug.Log(string.Format("Current item id {0} with X position {1}", item.id, item.x));
@@ -230,9 +230,9 @@ public class BoardManager : MonoBehaviour
         return matched;
     }
 
-    List<DoddleItem> GetMatchVertically(DoddleItem item)
+    List<Item> GetMatchVertically(Item item)
     {
-        List<DoddleItem> matched = new List<DoddleItem> { item };
+        List<Item> matched = new List<Item> { item };
         int lowerItem = item.y - 1; // Imediatelly lower item
         int upperItem = item.y + 1; // Imediatelly upper item
         Debug.Log(string.Format("Current item id {0} with Y position {1}", item.id, item.y));
@@ -255,7 +255,7 @@ public class BoardManager : MonoBehaviour
         _tiles = Resources.LoadAll<GameObject>("Prefabs");
         for (int i = 0; i < _tiles.Length; i++)
         {
-            _tiles[i].GetComponent<DoddleItem>().id = i;
+            _tiles[i].GetComponent<Item>().id = i;
             Debug.Log(string.Format("Loaded game object {0} with id {1}", _tiles[i].name, i));
         }
         Debug.Log(string.Format("Loaded {0} objects", _tiles.Length));
@@ -265,7 +265,7 @@ public class BoardManager : MonoBehaviour
     {
         LoadDoddles();
         BoardSetup();
-        DoddleItem.OnMouseOverItemEventHandler += OnMouseOverItem;
+        Item.OnMouseOverItemEventHandler += OnMouseOverItem;
     }
 
     void Start()
@@ -275,6 +275,6 @@ public class BoardManager : MonoBehaviour
     void OnDisable()
     {
         // Unsubscribe events
-        DoddleItem.OnMouseOverItemEventHandler -= OnMouseOverItem;
+        Item.OnMouseOverItemEventHandler -= OnMouseOverItem;
     }
 }

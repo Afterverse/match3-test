@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class Match
 {
-    public List<DoddleItem> match = null;
+    public List<Item> match = null;
     public int matchStartX;
     public int matchEndX;
     public int matchStartY;

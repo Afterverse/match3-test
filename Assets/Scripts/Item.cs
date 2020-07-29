@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class DoddleItem : MonoBehaviour
+public class Item : MonoBehaviour
 {
     public int x
     {
@@ -31,6 +31,6 @@ public class DoddleItem : MonoBehaviour
         }
     }
 
-    public delegate void OnMouseOverItem(DoddleItem item);
+    public delegate void OnMouseOverItem(Item item);
     public static event OnMouseOverItem OnMouseOverItemEventHandler;
 }
