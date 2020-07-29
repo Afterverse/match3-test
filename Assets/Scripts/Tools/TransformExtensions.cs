@@ -19,4 +19,20 @@ public static class TransformExtensions
         // Make sure that it snaps to the end position.
         t.position = target;
     }
+
+    public static IEnumerator Scale(this Transform t, Vector3 target, float duration)
+    {
+        Vector3 startingScale = t.localScale;
+        float timer = 0f;
+
+        while (timer < duration)
+        {
+            yield return null;
+            timer += Time.deltaTime;
+            t.localScale = Vector3.Lerp(startingScale, target, timer / duration);
+        }
+
+        // Make sure that it snaps to the end scale.
+        t.localScale = target;
+    }
 }
