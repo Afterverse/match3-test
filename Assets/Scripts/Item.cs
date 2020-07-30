@@ -1,22 +1,30 @@
 ﻿using UnityEngine;
+using UnityEditor;
 
 public class Item : MonoBehaviour
 {
     public int x
     {
-        get;
-        private set;
+        get => _item.x;
+        private set => _item.x = value;
     }
 
     public int y
     {
-        get;
-        private set;
+        get => _item.y;
+        private set => _item.y = value;
     }
+
+    private ItemBase _item;
 
     public int id;
 
-    public void OnItemPositionChanged(int newX, int newY)
+    void Awake()
+    {
+        _item = new ItemBase();
+    }
+
+    public void SetPosition(int newX, int newY)
     {
         x = newX;
         y = newY;
@@ -29,6 +37,17 @@ public class Item : MonoBehaviour
         {
             OnMouseOverItemEventHandler(this);
         }
+    }
+
+    void OnDrawGizmos()
+    {
+        Handles.Label(transform.position, string.Format("[{0}][{1}]\nID: {2}", x, y, id));
+    }
+
+    public ItemBase Copy()
+    {
+        ItemBase copy = _item.DeepCopy();
+        return copy;
     }
 
     public delegate void OnMouseOverItem(Item item);
