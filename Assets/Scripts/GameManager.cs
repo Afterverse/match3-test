@@ -13,8 +13,6 @@ public class GameManager : MonoBehaviour
     private int level = 1;  //  Current level number.
     private bool doingSetup = true; // Boolean to check if we're setting and updating up board, prevent various actions during setup.
 
-    private Item _selectedItem = null; // Reference to selected item
-
     //Awake is always called before any Start functions
     void Awake()
     {

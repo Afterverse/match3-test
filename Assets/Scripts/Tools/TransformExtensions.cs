@@ -35,4 +35,19 @@ public static class TransformExtensions
         // Make sure that it snaps to the end scale.
         t.localScale = target;
     }
+
+    public static IEnumerator Fall(this Transform t, Vector3 target, float gravity)
+    {
+        Vector3 velocity = Vector3.zero;
+
+        while (t.position.y > target.y)
+        {
+            yield return null;
+            velocity = velocity + new Vector3(0f, -gravity, 0f) * Time.deltaTime;
+            t.position = t.position + velocity * Time.deltaTime;
+        }
+
+        // Make sure that it snaps to the end position.
+        t.position = target;
+    }
 }

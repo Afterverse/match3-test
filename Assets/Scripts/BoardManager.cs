@@ -12,6 +12,8 @@ public class BoardManager : MonoBehaviour
     public float itemSwapTime = 0.1f;
     public float delayBetweenMatches = 0.2f;
 
+    public float gravity = 9.8f;
+
     // Reference for loading our tile prefabs
     private GameObject[] _tiles;
 
@@ -44,13 +46,13 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    Item InstantiateDoddle(int x, int y)
+    Item InstantiateDoddle(int x, int y, int offsetX = 0, int offsetY = 0)
     {
         //Choose a random tile from our array of tile prefabs and prepare to instantiate it.
         GameObject toInstantiate = _tiles[Random.Range(0, _tiles.Length)];
 
         //Instantiate the GameObject instance using the prefab chosen for to Instantiate at the Vector3 corresponding to current grid position in loop.
-        Item newDoddle = ((GameObject)Instantiate(toInstantiate, new Vector3(x, y, 0f), Quaternion.identity)).GetComponent<Item>();
+        Item newDoddle = ((GameObject)Instantiate(toInstantiate, new Vector3(x + offsetX, y + offsetY, 0f), Quaternion.identity)).GetComponent<Item>();
 
         //Set the parent of our newly instantiated object instance to boardHolder, this is just organizational to avoid cluttering hierarchy.
         newDoddle.transform.SetParent(boardHolder);
@@ -250,8 +252,11 @@ public class BoardManager : MonoBehaviour
                     _items[i, j] = upperIndex;
                     _items[i, j + 1] = current;
                     _items[i, j].SetPosition(_items[i, j].x, _items[i, j].y - 1);
+                    StartCoroutine(_items[i, j].transform.Fall(new Vector3(_items[i, j].x, _items[i, j].y, 0f), gravity));
                 }
-                _items[i, height - 1] = InstantiateDoddle(i, height - 1);
+                _items[i, height - 1] = InstantiateDoddle(i, height - 1, 0, 1);
+                Item newItem = _items[i, height - 1];
+                StartCoroutine(newItem.transform.Fall(new Vector3(newItem.x, newItem.y, 0f), gravity));
             }
         }
         else if (minX == maxX) // We have to update one column
@@ -269,13 +274,17 @@ public class BoardManager : MonoBehaviour
             for (int y = 0; y < height - matchHeight; y++)
             {
                 _items[currentX, y].SetPosition(currentX, y);
+                StartCoroutine(_items[currentX, y].transform.Fall(new Vector3(currentX, y), gravity));
             }
             for (int i = 0; i < match.Count; i++)
             {
-                Debug.Log(string.Format("[{0}][{1}]", currentX, (height - 1) - i));
-                _items[currentX, (height - 1) - i] = InstantiateDoddle(currentX, (height - 1) - i);
+                _items[currentX, (height - 1) - i] = InstantiateDoddle(currentX, (height - 1) - i, 0, match.Count);
+                Item intantiated = _items[currentX, (height - 1) - i];
+                StartCoroutine(intantiated.transform.Fall(new Vector3(intantiated.x, intantiated.y), gravity));
             }
         }
+
+        CheckForMatches();
 
         yield return null;
     }
@@ -292,6 +301,7 @@ public class BoardManager : MonoBehaviour
                 {
                     yield return StartCoroutine(DestroyMatch(matchInfo.match));
                     yield return StartCoroutine(UpdateBoardIndices(matchInfo));
+
                     yield return new WaitForSeconds(delayBetweenMatches);
                 }
             }
