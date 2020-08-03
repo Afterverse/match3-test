@@ -33,13 +33,14 @@ public class Item : MonoBehaviour
 
     public IEnumerator Fall(Vector3 target, float gravity)
     {
+        if (transform == null) { yield break; }; // Fix null reference when object is already destroyed
         isFalling = true;
         Vector3 velocity = Vector3.zero;
 
         while (transform.position.y > target.y)
         {
             yield return null;
-            if (transform == null) { yield break; };
+            if (transform == null) { yield break; }; // Fix null reference when object is already destroyed
             velocity = velocity + new Vector3(0f, -gravity, 0f) * Time.deltaTime;
             transform.position = transform.position + velocity * Time.deltaTime;
         }

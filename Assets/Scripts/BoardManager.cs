@@ -27,8 +27,6 @@ public class BoardManager : MonoBehaviour
 
     public bool canPlay = true;
 
-    private bool updating = true;
-
     void BoardSetup()
     {
 
