@@ -46,9 +46,38 @@ public class BoardManager : MonoBehaviour
         }
     }
 
+
+    // Shuffle board using Fisher-Yates algorithm
+    public void ShuffleBoard(System.Random random)
+    {
+        // Get 2d array dimensions
+        int num_rows = _items.GetUpperBound(0) + 1;
+        int num_cols = _items.GetUpperBound(1) + 1;
+        int num_cells = num_rows * num_cols;
+
+        // Randomize the array.
+        for (int i = 0; i < num_cells - 1; i++)
+        {
+            // Pick a random cell between i and the end of the array
+            int j = random.Next(i, num_cells);
+
+            // Convert to row/column indexes
+            int row_i = i / num_cols;
+            int col_i = i % num_cols;
+            int row_j = j / num_cols;
+            int col_j = j % num_cols;
+
+            // Swap cells i and j
+            Item temp = _items[row_i, col_i];
+            _items[row_i, col_i] = _items[row_j, col_j];
+            _items[row_j, col_j] = temp;
+            SwapIndices(_items[row_i, col_i], _items[row_j, col_j]);
+        }
+    }
+
     Item InstantiateDoddle(int x, int y, int offsetX = 0, int offsetY = 0)
     {
-        //Choose a random tile from our array of tile prefabs and prepare to instantiate it.
+        //Choose a random tile from our _items of tile prefabs and prepare to instantiate it.
         GameObject toInstantiate = _tiles[Random.Range(0, _tiles.Length)];
 
         //Instantiate the GameObject instance using the prefab chosen for to Instantiate at the Vector3 corresponding to current grid position in loop.
@@ -189,7 +218,8 @@ public class BoardManager : MonoBehaviour
     {
         canPlay = false;
 
-        yield return StartCoroutine(Swap(a, b)); // We do the swappingz
+        SwapIndices(a, b);
+        yield return StartCoroutine(Swap(a, b));
 
         MatchInfo matchA = GetMatch(a);
         MatchInfo matchB = GetMatch(b);
@@ -198,9 +228,23 @@ public class BoardManager : MonoBehaviour
         {
             // Swap not resulted in a valid match, undo swap
             Debug.Log("Swap not valid");
+            SwapIndices(a, b);
             yield return StartCoroutine(Swap(a, b));
             canPlay = true;
             yield break;
+        }
+
+        if (matchA.valid)
+        {
+            yield return StartCoroutine(UpdateBoardIndices(matchA));
+            yield return StartCoroutine(DestroyMatch(matchA.match));
+            yield return new WaitForSeconds(delayBetweenMatches);
+        }
+        else if (matchB.valid)
+        {
+            yield return StartCoroutine(UpdateBoardIndices(matchB));
+            yield return StartCoroutine(DestroyMatch(matchB.match));
+            yield return new WaitForSeconds(delayBetweenMatches);
         }
 
         yield return StartCoroutine(CheckForMatches());
@@ -208,14 +252,17 @@ public class BoardManager : MonoBehaviour
         canPlay = true;
     }
 
+    void SwapIndices(Item a, Item b)
+    {
+        ItemBase temp = a.Copy();
+        UpdateItemPositions(a, b.x, b.y);
+        UpdateItemPositions(b, temp.x, temp.y);
+    }
+
     IEnumerator Swap(Item a, Item b)
     {
         StartCoroutine(a.transform.Move(b.transform.position, itemSwapTime));
         StartCoroutine(b.transform.Move(a.transform.position, itemSwapTime));
-
-        ItemBase temp = a.Copy();
-        UpdateItemPositions(a, b.x, b.y);
-        UpdateItemPositions(b, temp.x, temp.y);
         yield return new WaitForSeconds(itemSwapTime);
     }
 
@@ -285,6 +332,11 @@ public class BoardManager : MonoBehaviour
         }
 
         CheckForMatches();
+        if (!CheckForPossibleMoves())
+        {
+            Debug.Log("Should shuffle board");
+            ShuffleBoard(new System.Random());
+        };
 
         yield return null;
     }
@@ -308,6 +360,40 @@ public class BoardManager : MonoBehaviour
         }
     }
 
+    bool CheckForPossibleMoves()
+    {
+        List<List<Item>> possibleSwaps = new List<List<Item>>();
+        for (int x = 0; x < width - 1; x++)
+        {
+            //Loop along y axis
+            for (int y = 0; y < height - 1; y++)
+            {
+                Item current = _items[x, y];
+                Item upperItem = _items[x, y + 1];
+                Item rightItem = _items[x + 1, y];
+
+                SwapIndices(current, rightItem);
+                MatchInfo matchA = GetMatch(current);
+                MatchInfo matchB = GetMatch(rightItem);
+                if (matchA.valid || matchB.valid)
+                {
+                    possibleSwaps.Add(new List<Item> { current, rightItem });
+                }
+                SwapIndices(current, rightItem); // Swap back as we dont want to 
+
+                SwapIndices(current, upperItem);
+                MatchInfo matchC = GetMatch(current);
+                MatchInfo matchD = GetMatch(upperItem);
+                if (matchC.valid || matchD.valid)
+                {
+                    possibleSwaps.Add(new List<Item> { current, upperItem });
+                }
+                SwapIndices(current, upperItem); // Swap back as we dont want to 
+            }
+        }
+        Debug.Log(possibleSwaps.Count);
+        return possibleSwaps.Count > 0;
+    }
     void OnDisable()
     {
         Item.OnMouseOverItemEventHandler -= OnMouseOverItem;

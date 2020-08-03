@@ -306,6 +306,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d49f88ae9efbe6846b042f48dd26ea26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  height: 5
+  width: 5
+  minMatch: 3
+  itemSwapTime: 0.1
+  delayBetweenMatches: 0.2
+  gravity: 9.8
+  canPlay: 1
 --- !u!4 &558510913
 Transform:
   m_ObjectHideFlags: 0
@@ -583,14 +590,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1695954783}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b1f099666347734c842a8f6b9349b24, type: 3}
+  m_Script: {fileID: 11500000, guid: d49f88ae9efbe6846b042f48dd26ea26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  height: 9
+  height: 5
   width: 5
   minMatch: 3
   itemSwapTime: 0.1
   delayBetweenMatches: 0.2
+  gravity: 9.8
   canPlay: 1
 --- !u!4 &1695954786
 Transform:
