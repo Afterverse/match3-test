@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public static class TransformExtensions
@@ -44,8 +43,8 @@ public static class TransformExtensions
 
         while (t.position.y > target.y)
         {
-            if (t == null) { yield break; };
             yield return null;
+            if (t == null) { yield break; };
             velocity = velocity + new Vector3(0f, -gravity, 0f) * Time.deltaTime;
             t.position = t.position + velocity * Time.deltaTime;
         }

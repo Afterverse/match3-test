@@ -1,27 +1,27 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEditor;
 
 public class Item : MonoBehaviour
 {
     public int x
     {
-        get => _item.x;
-        private set => _item.x = value;
+        get;
+        set;
     }
 
     public int y
     {
-        get => _item.y;
-        private set => _item.y = value;
+        get;
+        set;
     }
-
-    private ItemBase _item;
 
     public int id;
 
-    void Awake()
+    public bool isFalling
     {
-        _item = new ItemBase();
+        get;
+        set;
     }
 
     public void SetPosition(int newX, int newY)
@@ -29,6 +29,24 @@ public class Item : MonoBehaviour
         x = newX;
         y = newY;
         gameObject.name = string.Format("[{0}][{1}]", x, y);
+    }
+
+    public IEnumerator Fall(Vector3 target, float gravity)
+    {
+        isFalling = true;
+        Vector3 velocity = Vector3.zero;
+
+        while (transform.position.y > target.y)
+        {
+            yield return null;
+            if (transform == null) { yield break; };
+            velocity = velocity + new Vector3(0f, -gravity, 0f) * Time.deltaTime;
+            transform.position = transform.position + velocity * Time.deltaTime;
+        }
+
+        // Make sure that it snaps to the end position.
+        transform.position = target;
+        isFalling = false;
     }
 
     void OnMouseDown()
@@ -42,12 +60,6 @@ public class Item : MonoBehaviour
     void OnDrawGizmos()
     {
         Handles.Label(transform.position, string.Format("[{0}][{1}]\nID: {2}", x, y, id));
-    }
-
-    public ItemBase Copy()
-    {
-        ItemBase copy = _item.DeepCopy();
-        return copy;
     }
 
     public delegate void OnMouseOverItem(Item item);
